@@ -51,19 +51,19 @@ app.use((req, res, next) => {
 // Read ALLOWED_ORIGINS from environment (comma-separated list), fallback to localhost for dev
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
-  : [
-      "http://localhost:5173",
-      "http://localhost:3000",
-      "https://siya-frontend-q6kmuzia2-siya-apps-projects.vercel.app",
-      "https://siya-frontend-woad.vercel.app",
-    ];
+  : ["http://localhost:5173", "http://localhost:3000"];
 
 app.use(
   cors({
     // Dynamically check if the request origin is allowed
     origin: (origin, callback) => {
+      const vercelRegex = /\.vercel\.app$/;
       // If no origin (like Postman, curl), or the origin is in our allowed list → allow it
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        vercelRegex.test(origin)
+      ) {
         callback(null, true);
       } else {
         // Otherwise block it
