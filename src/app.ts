@@ -55,6 +55,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
       "http://localhost:5173",
       "http://localhost:3000",
       "https://siya-frontend-q6kmuzia2-siya-apps-projects.vercel.app",
+      "https://siya-frontend-woad.vercel.app",
     ];
 
 app.use(
