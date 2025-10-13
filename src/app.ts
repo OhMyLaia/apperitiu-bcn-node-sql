@@ -51,7 +51,11 @@ app.use((req, res, next) => {
 // Read ALLOWED_ORIGINS from environment (comma-separated list), fallback to localhost for dev
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
-  : ["http://localhost:5173", "http://localhost:3000"];
+  : [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "https://siya-frontend-q6kmuzia2-siya-apps-projects.vercel.app",
+    ];
 
 app.use(
   cors({
