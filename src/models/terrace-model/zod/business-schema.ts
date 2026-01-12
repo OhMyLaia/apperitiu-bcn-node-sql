@@ -9,7 +9,7 @@ export const BusinessSchema = z.object({
     Referencia_Cadastral: z.string(),
     Nom_Via: z.string(),
     Longitud: z.string(),
-    Porta: z.string(),
+    Num_Policia_Inicial: z.string(),
     Nom_Local: z.string(),
     Codi_Barri: z.string(),
     // Codi_Activitat_2016: z.string(),

@@ -1,86 +1,62 @@
-// import { describe, it, expect } from 'vitest';
-// import { matchByCoords } from '../coordsValidator.js';
-// import type { TerraceApiType } from '../../../models/zod/terrace-schema.js';
-// import type { BusinessApiType } from '../../../models/zod/business-schema.js';
 
-// const makeBusiness = (lat: string, lon: string): BusinessApiType => ({
-//     Nom_CComercial: "Test Biz",
-//     Codi_Districte: "01",
-//     Codi_Activitat_2022: "123",
-//     ID_Global: "xyz",
-//     Referencia_Cadastral: "ref",
-//     Nom_Via: "Carrer Test",
-//     Longitud: lon,
-//     Porta: "12",
-//     Nom_Local: "Biz Place",
-//     Codi_Barri: "05",
-//     Codi_Activitat_2016: "456",
-//     Latitud: lat,
-//     Codi_Grup_Activitat: "789",
-//     Nom_Districte: "Eixample",
-//     Nom_Barri: "Sagrada Família",
-// });
+import type { TerraceApiType } from '../../../../models/terrace-model/zod/terrace-schema.js';
+import type { BusinessApiType } from '../../../../models/terrace-model/zod/business-schema.js';
+import { readJsonArray } from '../../../../utils/terrace-utils/readJson.js';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { matchByCoords } from '../coordsValidator.js';
 
-// const terrace: TerraceApiType = {
-//     LATITUD: "41.123456",
-//     LONGITUD: "2.123456",
-//     CODI_DISTRICTE: "01",
-//     NOM_DISTRICTE: "Eixample",
-//     CODI_BARRI: "05",
-//     NOM_BARRI: "Sagrada Família",
-//     EMPLACAMENT: "Test St. 12",
-//     OCUPACIO: "",
-//     TAULES: "4",
-//     CADIRES: "8",
-//     TAULES_VORERA: "",
-//     CADIRES_VORERA: "",
-//     TAULES_CALCADA: "",
-//     CADIRES_CALCADA: "",
-//     SUPERFICIE_OCUPADA: "",
-//     DATA_EXPLO: "",
-//     VIGENCIA: "",
-//     ORDENACIO: "",
-//     X_ETRS89: "",
-//     Y_ETRS89: "",
-//     _id: 1,
-// };
+let businesses: BusinessApiType[] = [];
+let terraces: TerraceApiType[] = [];
 
-// describe('matchByCoords', () => {
-//     it('returns a match if coordinates are exactly the same', () => {
-//         const businesses = [makeBusiness("41.123456", "2.123456")];
-//         const result = matchByCoords(terrace, businesses);
-//         expect(result).toHaveLength(1);
-//     });
+beforeAll(async () => {
+    try {
+        const fullBusinesses = await readJsonArray<BusinessApiType>("./businesses-restaurants.json");
+        const fullTerraces = await readJsonArray<TerraceApiType>("./terraces.json");
+        businesses = fullBusinesses.slice(0, 6000);
+        terraces = fullTerraces.slice(0, 6000);
+        console.log('Loaded businesses in match x coords:', businesses.length);
+        console.log('Loaded terraces: in match x coords', terraces.length);
+    } catch (error) {
+        console.error('❌ Error loading JSONs:', error);
+    }
+});
 
-//     it('returns null if no coordinates match', () => {
-//         const businesses = [makeBusiness("40.000000", "2.000000")];
-//         const result = matchByCoords(terrace, businesses);
-//         expect(result).toBeNull();
-//     });
+describe('matchByCoords', () => {
+    it('returns null when businesses is not an array', () => {
+        const result = matchByCoords(terraces[0], null as any, 0.000045);
+        expect(result).toBeNull();
+    });
 
-//     it('returns null when businesses is not an array', () => {
-//         const result = matchByCoords(terrace, {} as any);
-//         expect(result).toBeNull();
-//     });
+    it('returns empty array when no business is within coordinate tolerance', () => {
+        const fakeTerrace: TerraceApiType = {
+            ...terraces[0],
+            LATITUD: "0.000000",
+            LONGITUD: "0.000000"
+        };
 
-//     it('returns multiple matches when several businesses match', () => {
-//         const businesses = [
-//             makeBusiness("41.123456", "2.123456"),
-//             makeBusiness("41.123456", "2.123456"),
-//         ];
-//         const result = matchByCoords(terrace, businesses);
-//         expect(result).toHaveLength(2);
-//     });
+        const result = matchByCoords(fakeTerrace, businesses, 0.000045);
+        expect(result).toBeNull();
+    });
 
-//     it('returns null when coords are just outside the tolerance', () => {
-//         const businesses = [makeBusiness("41.123457", "2.123457")]; // ~0.0000011 difference
-//         const result = matchByCoords(terrace, businesses, 0.000001);
-//         expect(result).toBeNull();
-//     });
+    it('returns at least one match when business is very close to terrace', () => {
+        // This assumes at least one match exists in first 100 businesses
+        const testTerrace = terraces.find(t => {
+            return businesses.some(b => {
+                const latDiff = Math.abs(parseFloat(b.Latitud) - parseFloat(t.LATITUD));
+                const longDiff = Math.abs(parseFloat(b.Longitud) - parseFloat(t.LONGITUD));
+                return latDiff < 0.0002 && longDiff < 0.0002;
+            });
+        });
 
-//     it('returns a match if within increased tolerance', () => {
-//         const businesses = [makeBusiness("41.123457", "2.123457")];
-//         const result = matchByCoords(terrace, businesses, 0.00001); // increase tolerance
-//         expect(result).toHaveLength(1);
-//     });
-// });
+        expect(testTerrace).toBeDefined();
+
+        const result = matchByCoords(testTerrace!, businesses, 0.0002);
+        expect(result).not.toBeNull();
+        expect(result!.length).toBeGreaterThan(0);
+        console.log('Test terrace used:', testTerrace?.EMPLACAMENT);
+
+if (result) {
+    console.log('Matched businesses:', result.map(b => b.Nom_Local));
+}
+    });
+});

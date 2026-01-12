@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { typeValidator } from "../../../utils/terrace-utils/typeValidator.js";
 import { tagValidator } from "../../../utils/terrace-utils/tagValidator.js";
-import { defaultOpeningHours } from "../../../utils/terrace-utils/defaultOpeningHours.js";
 
 export const DietaryRestrictionSchema = z.enum([
     'Vegetarian', 'Vegan', 'NonVegetarian', 'GlutenFree'
@@ -110,61 +109,34 @@ export const BusinessSchema = z.object({
     is_verified: z.boolean(),
 });
 
-const DaySchema = z.object({
-    day: z.enum([
-        "monday", "tuesday", "wednesday",
-        "thursday", "friday", "saturday", "sunday"
-    ]),
-    hours: z.string()
-        .regex(/^\d{2}:\d{2}-\d{2}:\d{2}$/, {
-            message: "Hours must be in format 'HH:MM-HH:MM' (e.g., '09:00-17:00')",
-        })
-        .default("00:00-00:00"),
-});
-
 export const CustomTerraceSchema = z.object({
-    id: z.string(),
+    // id: z.string().uuid().optional(),
     business_name: z.string(),
     cadastro_ref: z.string(),
-    street_type: z.string(),
-    street_address: z.string(),
-    door_address: z.number(),
+    address: z.string(),
     activity_code: z.number(),
     group_activity_code: z.number(),
-    postal_code: z.number(),
     district_name: z.string(),
     district_code: z.number(),
     neighbourhood_name: z.string(),
     neighbourhood_code: z.number(),
+    zip_code: z.string(),
     tables: z.number(),
     seats: z.number(),
     latitude: z.string(),
     longitude: z.string(),
+    average_price: z.number().optional(),
+    average_rating: z.number().optional(),
     has_wifi: z.boolean().optional(),
     pet_friendly: z.boolean().optional(),
     can_smoke: z.boolean().optional(),
-    average_price: z.number().optional(),
-    average_rating: z.number().optional(),
-    has_disabled_acces: z.boolean().optional(),
+    has_disabled_access: z.boolean().optional(),
     has_kitchen: z.boolean().optional(),
-    dietary_restrictions: z.array(DietaryRestrictionSchema).optional(),
-    food_category: z.array(FoodCategorySchema).optional(),
-    placement_type: z.array(PlacementTypeSchema).optional(),
-    emotional_tags: z.array(EmotionalTagsSchema).optional(),
-    cover_type: z.array(CoverTypeSchema).optional(),
-    profile_pic: z.string().optional(),
-    has_promos: z.boolean(),
     reservation_fee: z.number(),
-    is_premium: z.boolean(),
-    is_verified: z.boolean(),
+    is_claimed: z.boolean(),
     instagram_account: z.string(),
-    opening_hours: z.array(DaySchema)
-        .length(7)
-        .refine(
-            (days) => new Set(days.map(day => day.day)).size === 7,
-            { message: "All 7 unique days must be provided" }
-        )
-        .default(defaultOpeningHours),
+    website: z.string(),
+    profile_pic: z.string().optional(),
 });
 
 export type DietaryRestrictionType = z.infer<typeof DietaryRestrictionSchema>;

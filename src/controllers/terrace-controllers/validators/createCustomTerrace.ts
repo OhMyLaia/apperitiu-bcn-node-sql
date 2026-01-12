@@ -1,46 +1,76 @@
-import { BusinessApiType } from "../../models/zod/business-schema.js";
-import { TerraceApiType } from "../../models/zod/terrace-schema.js";
-import {defaultOpeningHours} from "../../utils/defaultOpeningHours.js";
+import { BusinessApiType } from "../../../models/terrace-model/zod/business-schema.js";
+import { TerraceApiType } from "../../../models/terrace-model/zod/terrace-schema.js";
+import { defaultOpeningHours } from "../../../utils/terrace-utils/defaultOpeningHours.js";
+import Terrace from "../../../models/terrace-model/db/terrace-model-sequelize.js";
 
-export function createCustomTerrace(terrace: Partial<TerraceApiType>, biz: Partial<BusinessApiType>) {
-    return {
-        id: biz.ID_Global,
-        business_name: biz.Nom_CComercial,
+export async function createCustomTerrace(terrace: Partial<TerraceApiType>, biz: Partial<BusinessApiType>) {
+    // Terrace.create = {
+    //     business_name: biz.Nom_Local,
+    //     cadastro_ref: biz.Referencia_Cadastral,
+    //     street_type: biz.Nom_Via,
+    //     street_address: biz.Nom_Local,
+    //     door_address: biz.Num_Policia_Inicial,
+    //     activity_code: biz.Codi_Activitat_2022,
+    //     group_activity_code: biz.Codi_Activitat_2022,
+    //     district_name: biz.Codi_Districte,
+    //     district_code: biz.Codi_Districte,
+    //     neighbourhood_name: biz.Nom_Barri,
+    //     neighbourhood_code: biz.Codi_Barri,
+    //     postal_code: undefined,
+    //     tables: terrace.TAULES,
+    //     seats: terrace.CADIRES,
+    //     latitude: terrace.LATITUD,
+    //     longitude: terrace.LONGITUD,
+    //     average_price: undefined,
+    //     average_rating: undefined,
+    //     has_wifi: undefined,
+    //     pet_friendly: undefined,
+    //     can_smoke: undefined,
+    //     has_disabled_acces: undefined,
+    //     has_kitchen: undefined,
+    //     has_promos: false,
+    //     reservation_fee: 0,
+    //     is_premium: false,
+    //     is_verified: false,
+    //     instagram_account: '',
+    //     food_category: [],
+    //     placement_type: [],
+    //     emotional_tags: [],
+    //     cover_type: [],
+    //     dietary_restrictions: [],
+    //     profile_pic: '',
+    //     opening_hours: defaultOpeningHours
+    // };
+
+    await Terrace.create({
+        business_name: biz.Nom_Local,
         cadastro_ref: biz.Referencia_Cadastral,
-        street_type: biz.Nom_Via,
-        street_address: biz.Nom_Local,
-        door_address: biz.Porta,
-        activity_code: biz.Codi_Activitat_2022,
-        group_activity_code: biz.Codi_Activitat_2022,
-        district_name: biz.Codi_Districte,
-        district_code: biz.Codi_Districte,
-        neighbourhood_name: biz.Nom_Barri,
-        neighbourhood_code: biz.Codi_Barri,
-        postal_code: undefined,
-        tables: terrace.TAULES,
-        seats: terrace.CADIRES,
-        latitude: terrace.LATITUD,
-        longitude: terrace.LONGITUD,
+        address: terrace.EMPLACAMENT,
+        activity_code: parseInt(biz.Codi_Activitat_2022 || '0'),
+        group_activity_code: parseInt(biz.Codi_Activitat_2022 || '0'),
+        district_name: terrace.NOM_DISTRICTE,
+        district_code: parseInt(terrace.CODI_DISTRICTE || '0'),
+        neighbourhood_name: terrace.NOM_BARRI,
+        neighbourhood_code: parseInt(terrace.CODI_BARRI || '0'),
+        zip_code: undefined,
+        tables: parseInt(terrace.TAULES || '0'),
+        seats: parseInt(terrace.CADIRES || '0'),
+        latitude: parseFloat(terrace.LATITUD || '0'),
+        longitude: parseFloat(terrace.LONGITUD || '0'),
         average_price: undefined,
         average_rating: undefined,
         has_wifi: undefined,
         pet_friendly: undefined,
         can_smoke: undefined,
-        has_disabled_acces: undefined,
+        has_disabled_access: undefined,
         has_kitchen: undefined,
-        has_promos: false,
         reservation_fee: 0,
-        is_premium: false,
-        is_verified: false,
+        is_claimed: false,
         instagram_account: '',
-        food_category: [],
-        placement_type: [],
-        emotional_tags: [],
-        cover_type: [],
-        dietary_restrictions: [],
+        website: '',
         profile_pic: '',
-        opening_hours: defaultOpeningHours
-    };
+        opening_hours: defaultOpeningHours,
+    });
 }
 
 // {

@@ -24,10 +24,9 @@
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "types": ["node"]
   },
   "include": ["src/**/*", "env.ts"],
   "exclude": ["node_modules"]
 }
-

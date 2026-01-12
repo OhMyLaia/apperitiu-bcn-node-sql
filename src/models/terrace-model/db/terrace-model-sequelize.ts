@@ -3,44 +3,52 @@ import { sequelize } from '../../../config/sequelize-config.js';
 import { validFoodCategoryTags, validEmotionalTags, validCoverTypes, validPlacementTypes, validDietaryRestrictionTypes } from '../zod/customTerrace-schema.js';
 import { tagValidator } from '../../../utils/terrace-utils/tagValidator.js';
 import {defaultOpeningHours} from '../../../utils/terrace-utils/defaultOpeningHours.js';
+import { UUID } from 'crypto';
 //TODO find default images!!
 
-class Terrace extends Model {
-    // public id: string;
-    // public business_name!: string;
-    // public cadastro_ref!: string;
-    // public street_type!: string;
-    // public street_address!: string;
-    // public door_address!: number;
-    // public activity_code!: number;
-    // public group_activity_code!: number;
-    // public district_name!: string;
-    // public district_code!: number;
-    // public neighbourhood_name!: string;
-    // public neighbourhood_code!: number;
-    // public opening_hours?: string;
-    // public postal_code?: number;
-    // public tables!: number;
-    // public seats!: number;
-    // public latitude!: number;
-    // public longitude!: number;
-    // public average_price?: number;
-    // public average_rating?: number;
-    // public has_wifi?: boolean;
-    // public pet_friendly?: boolean;
-    // public can_smoke?: boolean;
-    // public has_disabled_acces?: boolean;
-    // public has_kitchen?: boolean;
-    // has_promos: boolean;
-    // reservation_fee: number | 0;
-    // is_premium: boolean;
-    // is_verified: boolean;
-    // instagram_account?: string;
+export class Terrace extends Model {
+    public id!: UUID;
+    public business_name!: string;
+    public cadastro_ref!: string;
+    public address!: string;
+    public activity_code!: number;
+    public group_activity_code!: number;
+    public district_name!: string;
+    public district_code!: number;
+    public neighbourhood_name!: string;
+    public neighbourhood_code!: number;
+    public opening_hours?: string;
+    public zip_code?: number;
+    public tables!: number;
+    public seats!: number;
+    public latitude!: number;
+    public longitude!: number;
+    public average_price?: number;
+    public average_rating?: number;
+    public has_wifi?: boolean;
+    public pet_friendly?: boolean;
+    public can_smoke?: boolean;
+    public has_disabled_acces?: boolean;
+    public has_kitchen?: boolean;
+    public is_claimed?: boolean;
+    public instagram_account?: string;
+    public website?: string;
+    public profile_pic?: string;
+    public reservation_fee?: number;
+    public tags!: {
+        cover?: string[];
+        dietary?: string[];
+        emotional?: string[];
+        food?: string[];
+        placement?: string[];
+    };
+    public phone_num?: string;
 }
 
 Terrace.init({
     id: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
         allowNull: false,
     },
@@ -51,17 +59,10 @@ Terrace.init({
     cadastro_ref: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true
     },
-    street_type: {
+    address: {
         type: DataTypes.STRING,
-        allowNull: false,
-    },
-    street_address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    door_address: {
-        type: DataTypes.INTEGER,
         allowNull: false,
     },
     activity_code: {
@@ -88,8 +89,8 @@ Terrace.init({
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    postal_code: {
-        type: DataTypes.INTEGER,
+    zip_code: {
+        type: DataTypes.STRING,
         allowNull: true,
     },
     tables: {
@@ -101,11 +102,11 @@ Terrace.init({
         allowNull: false,
     },
     latitude: {
-        type: DataTypes.STRING,
+        type: DataTypes.DOUBLE,
         allowNull: false,
     },
     longitude: {
-        type: DataTypes.STRING,
+        type: DataTypes.DOUBLE,
         allowNull: false,
     },
     average_price: {
@@ -129,7 +130,7 @@ Terrace.init({
         type: DataTypes.BOOLEAN,
         allowNull: true,
     },
-    has_disabled_acces: {
+    has_disabled_access: {
         type: DataTypes.BOOLEAN,
         allowNull: true,
     },
@@ -137,118 +138,58 @@ Terrace.init({
         type: DataTypes.BOOLEAN,
         allowNull: true,
     },
-    has_promos: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-    },
     reservation_fee: {
         type: DataTypes.FLOAT,
         allowNull: false,
         defaultValue: 0
     },
-    is_premium: {
+    is_claimed: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-    },
-    is_verified: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
+        defaultValue: false
     },
     instagram_account: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    food_category: {
-        type: DataTypes.JSON,
+    website: {
+        type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: [],
-        validate: {
-            isValidFoodTags(value: any) {
-                tagValidator(value, validFoodCategoryTags)
-            }
-        }
-    },
-    placement_type: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: [],
-        validate: {
-            isValidPlacementType(value: any) {
-                tagValidator(value, validPlacementTypes)
-            }
-        }
-    },
-    emotional_tags: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: [],
-        validate: {
-            isValidEmotionalTags(value: any) {
-                tagValidator(value, validEmotionalTags);
-            }
-        }
-    },
-    cover_type: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: [],
-        validate: {
-            isValidCoverType(value: any) {
-                tagValidator(value, validCoverTypes);
-            }
-        }
-    },
-    dietary_restrictions: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: [],
-        validate: {
-            isValidDietaryRestrictionsType(value: any) {
-                tagValidator(value, validDietaryRestrictionTypes);
-            }
-        }
     },
     profile_pic: {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: () => {
-            const defaultImages = [
-                "terrace1.jpg",
-                "terrace2.jpg",
-            ];
-            return defaultImages[Math.floor(Math.random() * defaultImages.length)];
-        },
+        defaultValue: ''
     },
-    opening_hours: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: defaultOpeningHours,
-        validate: {
-            isValidHours(value: any) {
-                if (!Array.isArray(value)) throw new Error('Must be an array');
-                if (value.length !== 7) throw new Error('Must have 7 days');
-                value.forEach(day => {
-                    if (!/^\d{2}:\d{2}-\d{2}:\d{2}$/.test(day.hours)) {
-                        throw new Error(`Invalid hours format for ${day.day}`);
-                    }
-                });
-            }
+    tags: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {},
+        get() {
+            const rawValue = this.getDataValue('tags');
+            return {
+                cover: [],
+                dietary: [],
+                emotional: [],
+                food: [],
+                placement: [],
+                ...rawValue
+            };
         }
     },
+    phone_num: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: ''
+    }
 },
     {
         sequelize,
         modelName: 'Terrace',
         tableName: 'terraces',
+        schema: 'public',
         timestamps: false,
     }
 );
 
 export default Terrace;
-
-// has_promos
-// reservation_fee
-// is_premium
-// is_verified
-// instagram_account
-

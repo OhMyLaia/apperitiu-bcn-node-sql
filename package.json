@@ -1,5 +1,5 @@
 {
-  "name": "apperitiu-bcn-node-sql",
+  "name": "siya-backend",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -7,13 +7,15 @@
     "test": "vitest",
     "start": "node dist/app.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'tsx src/start.ts'",
-    "build": "tsc"
+    "dev:win": "nodemon --watch \"src//*.ts\" --exec \"npx tsx src/start.ts\"",
+    "build": "tsc",
+    "test-db-connection": "tsx src/testConnection.ts"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OhMyLaia/apperitiu-bcn-node-sql.git"
   },
-  "author": "ohmylaia",
+  "author": "siya",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/OhMyLaia/apperitiu-bcn-node-sql/issues"
@@ -22,28 +24,53 @@
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.27.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/body-parser": "^1.19.5",
+    "@types/compression": "^1.8.0",
+    "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.18",
-    "@types/express": "^4.17.1",
-    "@types/node": "^22.15.21",
+    "@types/express": "^4.17.23",
+    "@types/express-fileupload": "^1.5.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.18.3",
     "@types/validator": "^13.15.1",
+    "@vitest/coverage-v8": "^3.2.3",
     "eslint": "^9.27.0",
     "globals": "^16.1.0",
-    "nodemon": "^3.1.0",
+    "nodemon": "^3.1.10",
     "tsx": "^4.9.0",
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.32.1",
-    "vitest": "^3.1.4"
+    "vite": "^7.1.7",
+    "vitest": "^3.2.3"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.8.0",
+    "@types/stripe": "^8.0.417",
     "axios": "^1.9.0",
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
+    "cloudinary": "^2.6.1",
+    "compression": "^1.8.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
+    "express-fileupload": "^1.5.1",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.14.1",
+    "node-cron": "^4.1.0",
+    "pexels": "^1.4.0",
+    "pg": "^8.16.0",
+    "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.7",
     "sequelize-typescript": "^2.1.6",
-    "zod": "^3.25.23"
+    "stripe": "^18.2.1",
+    "ts-node": "^10.9.2",
+    "zod": "^3.25.49"
   }
 }
